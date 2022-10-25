@@ -114,22 +114,4 @@ export class Wallet {
     const transaction = await provider.txStatus(txhash, 'unnused');
     return providers.getTransactionLastResult(transaction);
   }
-
-  async getAccountBalance() {
-    const protocolConfig = await this.connection.provider.experimental_protocolConfig({ finality: 'final' });
-    const state = await this.state();
-
-    const costPerByte = new BN(protocolConfig.runtime_config.storage_amount_per_byte);
-    const stateStaked = new BN(state.storage_usage).mul(costPerByte);
-    const staked = new BN(state.locked);
-    const totalBalance = new BN(state.amount).add(staked);
-    const availableBalance = totalBalance.sub(BN.max(staked, stateStaked));
-
-    return {
-        total: totalBalance.toString(),
-        stateStaked: stateStaked.toString(),
-        staked: staked.toString(),
-        available: availableBalance.toString()
-    };
-}
 }
